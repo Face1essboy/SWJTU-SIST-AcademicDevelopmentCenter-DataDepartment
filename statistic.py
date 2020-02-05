@@ -2,11 +2,19 @@
 import csv
 
 root_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/"  # 源数据的根目录
-output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/统计结果/"  # 输出数据路径
-folder_and_file = [  # 源数据的文件结构
-    r"04 其他/", [
-        r"茅院(信息)2014-01班", r"通信2015-05班[国]",
-        r"通信2016-03班[国]", r"智能(茅班)2019-01班"],
+output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/教务信息/统计分析/"  # 输出数据路径
+output_file_name = r"通信+计算机+物联网+轨道 区间长度1"  # 输出文件名
+folder_and_file = [
+    r"18 通信2014~2018/", [
+        r"通信2014-01班", r"通信2014-02班", r"通信2014-03班", r"通信2014-01班", r"通信2014-02班", r"通信2014-03班",
+        r"通信2015-01班", r"通信2015-02班", r"通信2015-03班",
+        r"通信2016-01班", r"通信2016-02班",
+        r"通信2017-01班", r"通信2017-02班", r"通信2017-03班",
+        r"通信2018-01班", r"通信2018-02班", r"通信2018-03班"],
+
+    # r"04 其他/", [
+    #     r"茅院(信息)2014-01班", r"通信2015-05班[国]",
+    #     r"通信2016-03班[国]", r"智能(茅班)2019-01班"],
 
     r"15 计算机2014~2018/", [
         r"计算机2014-01班", r"计算机2014-02班", r"计算机2014-03班", r"计算机2014-04班",
@@ -27,49 +35,40 @@ folder_and_file = [  # 源数据的文件结构
         r"轨道2016-01班", r"轨道2016-02班", r"轨道2016-03班", r"轨道2016-04班",
         r"轨道2017-01班", r"轨道2017-02班", r"轨道2017-03班",
         r"轨道2018-01班", r"轨道2018-02班", r"轨道2018-03班",
-        r"轨道2019-01班", r"轨道2019-02班", r"轨道2019-03班"]]
+        r"轨道2019-01班", r"轨道2019-02班", r"轨道2019-03班"]
+]
 file_format = r".csv"  # 源数据的文件格式
-output_header = [  # 输出数据格式
+
+
+rang_leng = 1
+offset = 4
+offset_dynamic = 100 // rang_leng
+
+output_header = [
     r"课程代码",
     r"课程名称",
     r"参加人数",
-    r"第一次正考所有参加者成绩之和",
-    r"第1次正考总成绩位于区间[0, 10]人数",
-    r"第1次正考总成绩位于区间(10, 20]人数",
-    r"第1次正考总成绩位于区间(20, 30]人数",
-    r"第1次正考总成绩位于区间(30, 40]人数",
-    r"第1次正考总成绩位于区间(40, 50]人数",
-    r"第1次正考总成绩位于区间(50, 60]人数",
-    r"第1次正考总成绩位于区间(60, 70]人数",
-    r"第1次正考总成绩位于区间(70, 80]人数",
-    r"第1次正考总成绩位于区间(80, 90]人数",
-    r"第1次正考总成绩位于区间(90, 100]人数",
-    r"第1次正考期末成绩位于区间[0, 10]人数",
-    r"第1次正考期末成绩位于区间(10, 20]人数",
-    r"第1次正考期末成绩位于区间(20, 30]人数",
-    r"第1次正考期末成绩位于区间(30, 40]人数",
-    r"第1次正考期末成绩位于区间(40, 50]人数",
-    r"第1次正考期末成绩位于区间(50, 60]人数",
-    r"第1次正考期末成绩位于区间(60, 70]人数",
-    r"第1次正考期末成绩位于区间(70, 80]人数",
-    r"第1次正考期末成绩位于区间(80, 90]人数",
-    r"第1次正考期末成绩位于区间(90, 100]人数",
-    r"第1次正考平时成绩位于区间[0, 10]人数",
-    r"第1次正考平时成绩位于区间(10, 20]人数",
-    r"第1次正考平时成绩位于区间(20, 30]人数",
-    r"第1次正考平时成绩位于区间(30, 40]人数",
-    r"第1次正考平时成绩位于区间(40, 50]人数",
-    r"第1次正考平时成绩位于区间(50, 60]人数",
-    r"第1次正考平时成绩位于区间(60, 70]人数",
-    r"第1次正考平时成绩位于区间(70, 80]人数",
-    r"第1次正考平时成绩位于区间(80, 90]人数",
-    r"第1次正考平时成绩位于区间(90, 100]人数",
+    r"第一次正考所有参加者成绩之和"]
+
+str1 = ["总成绩", "期末成绩", "平时成绩"]
+for i in range(3):
+    for j in range(offset_dynamic):
+        output_header.append(
+            str1[i] + '[' + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + (')' if j != offset_dynamic - 1 else ']'))
+
+output_header += [
     r"期末成绩占比100%人数",
     r"平时成绩占比100%人数",
     r"第1次正考未通过人数(正考总成绩 < 60)",
     r"第1次考试补考人数",
     r"第1次考试补考通过人数",
     r"重修人次"]
+
+
+# 获得一个成绩所处的区间
+def getRank(grade):
+    rank = int(grade // rang_leng)
+    return rank if rank != offset_dynamic else rank - 1
 
 
 def getStudentId(item):
@@ -195,32 +194,10 @@ def doStatisticAboutStudent(source_list, ans_dict, begin, end):
                 count_makeup = 0
             return detail["formal"], detail["makeup"], course_end - course_begin - count_makeup - 1
 
-        # 获得一个成绩所处的区间
-        def getRank(grade):
-            if grade <= 10:
-                return 0
-            elif grade <= 20:
-                return 1
-            elif grade <= 30:
-                return 2
-            elif grade <= 40:
-                return 3
-            elif grade <= 50:
-                return 4
-            elif grade <= 60:
-                return 5
-            elif grade <= 70:
-                return 6
-            elif grade <= 80:
-                return 7
-            elif grade <= 90:
-                return 8
-            else:
-                return 9
-
         # 输出格式的成绩区间相对于首列的偏移量
-        offset = 4
-        total_seat, formal_seat, makeup_seat = offset, offset + 10, offset + 20
+
+        total_seat, formal_seat, makeup_seat = offset, offset + \
+            offset_dynamic, offset + offset_dynamic * 2
         # 课程代码
         course_id = getCourseId(source_list[course_begin])
         # 若为新添加的课程,初始化dict中的一行
@@ -244,22 +221,22 @@ def doStatisticAboutStudent(source_list, ans_dict, begin, end):
         ans_dict[course_id][makeup_seat +
                             getRank(getUsualGrade(source_list[formal_i]))] += 1
         # 期末成绩占比100%人数
-        ans_dict[course_id][offset + 30] \
+        ans_dict[course_id][offset + offset_dynamic * 3] \
             += isFinalGrade100(source_list[formal_i])
         # 平时成绩占比100%人数
-        ans_dict[course_id][offset + 31] \
+        ans_dict[course_id][offset + offset_dynamic * 3 + 1] \
             += isUsualGrade100(source_list[formal_i])
         # 第一次正考未通过人数
-        ans_dict[course_id][offset + 32] \
+        ans_dict[course_id][offset + offset_dynamic * 3 + 2] \
             += 1 if getTotalGrade(source_list[formal_i]) < 60 else 0
         if makeup_i is not None:
             # 第一次考试补考人数
-            ans_dict[course_id][offset + 33] += 1
+            ans_dict[course_id][offset + offset_dynamic * 3 + 3] += 1
             # 第一次考试补考通过人数
-            ans_dict[course_id][offset + 34] \
+            ans_dict[course_id][offset + offset_dynamic * 3 + 4] \
                 += 1 if getTotalGrade(source_list[makeup_i]) >= 60 else 0
         # 重修人次
-        ans_dict[course_id][offset + 35] += count_makeup
+        ans_dict[course_id][offset + offset_dynamic * 3 + 5] += count_makeup
 
     course_begin, course_end = begin, end
     while True:
@@ -282,6 +259,7 @@ def formatResults(ans_dict, ans_header, save_path, file_name):
     return content
 
 
+ans_dict = dict()
 for i in range(len(folder_and_file) // 2):
     folder_name = folder_and_file[i*2]
     for file_name in folder_and_file[i*2+1]:
@@ -292,20 +270,19 @@ for i in range(len(folder_and_file) // 2):
         ) as csv_file:
             source_list = list(csv.reader(csv_file))[3:]
             source_list.append(None)  # 用于判断是否到达结尾
-            ans_dict = dict()
             begin, end = 0, 0
 
             while source_list[begin] is not None:
                 end = partitionByStudentID(source_list, begin)
                 doStatisticAboutStudent(source_list, ans_dict, begin, end)
                 begin = end
-            output_list = formatResults(
-                ans_dict,
-                output_header,
-                output_path,
-                file_name
-            )
+output_list = formatResults(
+    ans_dict,
+    output_header,
+    output_path,
+    output_file_name
+)
 
-    # xls = csv.reader(
-    #     r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/04 其他/智能(茅班)2019-01班.csv", header=None)
-    # print(xls)
+# xls = csv.reader(
+#     r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/04 其他/智能(茅班)2019-01班.csv", header=None)
+# print(xls)
