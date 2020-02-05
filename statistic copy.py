@@ -51,9 +51,9 @@ output_header = [
 
 str1 = ["总成绩", "期末成绩", "平时成绩"]
 for i in range(3):
-    for j in range(100 // rang_leng):
+    for j in range(offset_dynamic):
         output_header.append(
-            str1[i] + ('[' if j == 0 else '(') + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + ']')
+            str1[i] + '[' + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + (')' if j != offset_dynamic - 1 else ']')
 
 output_header += [
     r"期末成绩占比100%人数",
@@ -66,7 +66,8 @@ output_header += [
 
 # 获得一个成绩所处的区间
 def getRank(grade):
-    return int(grade // rang_leng)
+    rank = int(offset_dynamic)
+    return rank if rank != offset_dynamic else rank - 1
 
 
 def getStudentId(item):
