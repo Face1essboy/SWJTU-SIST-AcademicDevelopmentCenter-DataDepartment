@@ -53,7 +53,7 @@ str1 = ["总成绩", "期末成绩", "平时成绩"]
 for i in range(3):
     for j in range(offset_dynamic):
         output_header.append(
-            str1[i] + '[' + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + (')' if j != offset_dynamic - 1 else ']')
+            str1[i] + '[' + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + (')' if j != offset_dynamic - 1 else ']'))
 
 output_header += [
     r"期末成绩占比100%人数",
