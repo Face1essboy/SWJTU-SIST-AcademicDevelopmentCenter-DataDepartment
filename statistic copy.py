@@ -66,7 +66,7 @@ output_header += [
 
 # 获得一个成绩所处的区间
 def getRank(grade):
-    rank = int(offset_dynamic)
+    rank = int(grade // rang_leag)
     return rank if rank != offset_dynamic else rank - 1
 
 
