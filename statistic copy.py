@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import csv
 
-rang_leng = 5  # 区间长度
+rang_leng = 10  # 区间长度
 root_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/"  # 源数据的根目录
-output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/教务信息/统计分析/"  # 输出数据路径
+output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/轨道+计算机+物联网+其他/统计结果 区间长度10/"  # 输出数据路径
 output_file_name = r"通信+计算机+物联网+轨道"+r" 区间长度" + str(rang_leng)  # 输出文件名
 folder_and_file = [
     r"18 通信2014~2018/", [
@@ -259,7 +259,6 @@ def formatResults(ans_dict, ans_header, save_path, file_name):
     return content
 
 
-ans_dict = dict()
 for i in range(len(folder_and_file) // 2):
     folder_name = folder_and_file[i*2]
     for file_name in folder_and_file[i*2+1]:
@@ -270,18 +269,19 @@ for i in range(len(folder_and_file) // 2):
         ) as csv_file:
             source_list = list(csv.reader(csv_file))[3:]
             source_list.append(None)  # 用于判断是否到达结尾
+            ans_dict = dict()
             begin, end = 0, 0
 
             while source_list[begin] is not None:
                 end = partitionByStudentID(source_list, begin)
                 doStatisticAboutStudent(source_list, ans_dict, begin, end)
                 begin = end
-output_list = formatResults(
-    ans_dict,
-    output_header,
-    output_path,
-    output_file_name
-)
+                output_list = formatResults(
+                    ans_dict,
+                    output_header,
+                    output_path,
+                    file_name
+                )
 
 # xls = csv.reader(
 #     r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/04 其他/智能(茅班)2019-01班.csv", header=None)
