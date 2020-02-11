@@ -4,8 +4,7 @@ import csv
 rang_leng = 10  # 区间长度
 root_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/"  # 源数据的根目录
 output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/轨道+计算机+物联网+其他/统计结果 区间长度10/"  # 输出数据路径
-output_file_name = r"通信+计算机+物联网+轨道"+r" 区间长度" + str(rang_leng)  # 输出文件名
-folder_and_file = [
+folder_and_file = [  # 源数据文件夹与文件结构
     r"18 通信2014~2018/", [
         r"通信2014-01班", r"通信2014-02班", r"通信2014-03班", r"通信2014-01班", r"通信2014-02班", r"通信2014-03班",
         r"通信2015-01班", r"通信2015-02班", r"通信2015-03班",
@@ -41,8 +40,8 @@ folder_and_file = [
 file_format = r".csv"  # 源数据的文件格式
 
 
-offset = 4
-offset_dynamic = 100 // rang_leng
+offset = 4  # 成绩区间相对于第一列的偏移量
+offset_dynamic = 100 // rang_leng  # 区间个数
 
 output_header = [
     r"课程代码",
@@ -51,7 +50,7 @@ output_header = [
     r"第一次正考所有参加者成绩之和"]
 
 str1 = ["总成绩", "期末成绩", "平时成绩"]
-for i in range(3):
+for i in range(3):  # 用于生成输出文件的首行
     for j in range(offset_dynamic):
         output_header.append(
             str1[i] + '[' + str(j * rang_leng) + ',' + str((j+1) * rang_leng) + (')' if j != offset_dynamic - 1 else ']'))
@@ -194,8 +193,7 @@ def doStatisticAboutStudent(source_list, ans_dict, begin, end):
                 count_makeup = 0
             return detail["formal"], detail["makeup"], course_end - course_begin - count_makeup - 1
 
-        # 输出格式的成绩区间相对于首列的偏移量
-
+        # 成绩分段统计中分数最少的一段中的位置
         total_seat, formal_seat, makeup_seat = offset, offset + \
             offset_dynamic, offset + offset_dynamic * 2
         # 课程代码
