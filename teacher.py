@@ -2,9 +2,10 @@
 import csv
 
 rang_leng = 1  # 区间长度
+course_id_search = r"3271033"  # 目标课程ID
 root_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/源数据/csv源文件/"  # 源数据的根目录
 output_path = r"D:/synchronize folder/OneDrive - my.swjtu.edu.cn/文件/学业发展中心/其他/"  # 输出数据路径
-output_file_name = r" 区间长度" + str(rang_leng)  # 输出文件名
+output_file_name = course_id_search + r" 区间长度" + str(rang_leng)  # 输出文件名
 folder_and_file = [
     r"电科(微电)/", [
         r"电科(微电)2014-01班", r"电科(微电)2014-02班",
@@ -181,7 +182,7 @@ def isUsualGrade100(item):
         return 0
 
 
-def getCourseName(item):
+def getTeacherName(item):
     return item[13]
 
 
@@ -210,6 +211,7 @@ def partitionByStudentID(source_list, begin):
 
 # 根据分割好的数据进行统计,不包含end
 def doStatisticAboutStudent(source_list, ans_dict, begin, end):
+
     # 依照课程代码进行一次分割,分割出从course_begin开始到的同课程id的数据,返回下一个课程的位置
     def partitionByCourseId(course_begin):
         course_end = course_begin
@@ -223,6 +225,7 @@ def doStatisticAboutStudent(source_list, ans_dict, begin, end):
 
     # 统计一门课程的数据
     def doStatisticAboutCourse(course_begin, course_end):
+
         # 获得第一次正考的位置,第一次补考的位置(若无则为None),重修次数
         def getDetail():
             detail = {"earliest": getTerm(
@@ -246,49 +249,52 @@ def doStatisticAboutStudent(source_list, ans_dict, begin, end):
                 count_makeup = 0
             return detail["formal"], detail["makeup"], course_end - course_begin - count_makeup - 1
 
-        # 输出格式的成绩区间相对于首列的偏移量
+        # 匹配课程的ID
+        if getCourseId(source_list[course_begin]) != course_id_search:
+            return
 
+        # 输出格式的成绩区间相对于首列的偏移量
         total_seat, formal_seat, makeup_seat = offset, offset + \
             offset_dynamic, offset + offset_dynamic * 2
-        # 课程代码
-        course_id = getCourseId(source_list[course_begin])
+        # 课程老师名字
+        teacher_name = getTeacherName(source_list[course_begin])
         # 若为新添加的课程,初始化dict中的一行
-        if course_id not in ans_dict:
-            ans_dict[course_id] = [course_id,
-                                   getCourseName(source_list[course_begin])] + [0] * (len(output_header) - 2)
+        if teacher_name not in ans_dict:
+            ans_dict[teacher_name] = [teacher_name,
+                                      getCourseName(source_list[course_begin])] + [0] * (len(output_header) - 2)
         # 获得该课程第一次正考与其补考位置,该人重修该课程次数
         formal_i, makeup_i, count_makeup = getDetail()
         # 参加人数+1
-        ans_dict[course_id][2] += 1
+        ans_dict[teacher_name][2] += 1
         # 成绩求和
-        ans_dict[course_id][3] \
+        ans_dict[teacher_name][3] \
             += getTotalGrade(source_list[formal_i])
         # 总成绩相应区间人数+1
-        ans_dict[course_id][total_seat +
-                            getRank(getTotalGrade(source_list[formal_i]))] += 1
+        ans_dict[teacher_name][total_seat +
+                               getRank(getTotalGrade(source_list[formal_i]))] += 1
         # 期末成绩相应区间人数+1
-        ans_dict[course_id][formal_seat +
-                            getRank(getFinalGrade(source_list[formal_i]))] += 1
+        ans_dict[teacher_name][formal_seat +
+                               getRank(getFinalGrade(source_list[formal_i]))] += 1
         # 平时成绩相应区间人数+1
-        ans_dict[course_id][makeup_seat +
-                            getRank(getUsualGrade(source_list[formal_i]))] += 1
+        ans_dict[teacher_name][makeup_seat +
+                               getRank(getUsualGrade(source_list[formal_i]))] += 1
         # 期末成绩占比100%人数
-        ans_dict[course_id][offset + offset_dynamic * 3] \
+        ans_dict[teacher_name][offset + offset_dynamic * 3] \
             += isFinalGrade100(source_list[formal_i])
         # 平时成绩占比100%人数
-        ans_dict[course_id][offset + offset_dynamic * 3 + 1] \
+        ans_dict[teacher_name][offset + offset_dynamic * 3 + 1] \
             += isUsualGrade100(source_list[formal_i])
         # 第一次正考未通过人数
-        ans_dict[course_id][offset + offset_dynamic * 3 + 2] \
+        ans_dict[teacher_name][offset + offset_dynamic * 3 + 2] \
             += 1 if getTotalGrade(source_list[formal_i]) < 60 else 0
         if makeup_i is not None:
             # 第一次考试补考人数
-            ans_dict[course_id][offset + offset_dynamic * 3 + 3] += 1
+            ans_dict[teacher_name][offset + offset_dynamic * 3 + 3] += 1
             # 第一次考试补考通过人数
-            ans_dict[course_id][offset + offset_dynamic * 3 + 4] \
+            ans_dict[teacher_name][offset + offset_dynamic * 3 + 4] \
                 += 1 if getTotalGrade(source_list[makeup_i]) >= 60 else 0
         # 重修人次
-        ans_dict[course_id][offset + offset_dynamic * 3 + 5] += count_makeup
+        ans_dict[teacher_name][offset + offset_dynamic * 3 + 5] += count_makeup
 
     course_begin, course_end = begin, end
     while True:
